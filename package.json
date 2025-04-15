@@ -1,0 +1,7 @@
+{
+    "name": "@arlequins/library-nodejs",
+    "devDependencies": {
+      "lerna": "^8.2.1"
+    }
+  }
+  

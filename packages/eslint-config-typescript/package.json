@@ -1,0 +1,43 @@
+{
+    "name": "@arlequins/eslint-config-typescript",
+    "version": "1.0.0",
+    "description": "eslint config for typescript",
+    "keywords": [
+      "eslint",
+      "eslintconfig",
+      "eslint-config"
+    ],
+    "main": "index.js",
+    "scripts": {
+      "lint": "eslint .",
+      "lint:fix": "eslint . --fix"
+    },
+    "engines": {
+      "node": "<= 20"
+    },
+    "peerDependencies": {
+      "eslint": "^9.19.0",
+      "eslint-config-prettier": "^10.1.1",
+      "eslint-import-resolver-typescript": "^4.2.2",
+      "eslint-plugin-import": "^2.31.0",
+      "eslint-plugin-prettier": "^5.2.3",
+      "eslint-plugin-sonarjs": "^3.0.2",
+      "globals": "^15.14.0",
+      "prettier": "^3.5.3",
+      "typescript-eslint": "^8.27.0"
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/arlequins/library-nodejs.git",
+      "directory": "packages/eslint-config-typescript/"
+    },
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/arlequins/library-nodejs/issues"
+    },
+    "publishConfig": {
+      "access": "public",
+      "registry": "https://registry.npmjs.org/"
+    }
+  }
+  

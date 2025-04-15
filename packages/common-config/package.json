@@ -1,0 +1,36 @@
+{
+    "name": "@arlequins/common-config",
+    "version": "1.0.0",
+    "description": "common config",
+    "keywords": [
+        "config"
+    ],
+    "main": "index.js",
+    "scripts": {
+        "run": "echo 'no command'"
+    },
+    "engines": {
+        "node": "<= 20"
+    },
+    "peerDependencies": {
+        "@types/jest": "^29.5.14",
+        "husky": "9.1.7",
+        "jest": "^29.7.0",
+        "lint-staged": "^15.4.3",
+        "ts-jest": "^29.2.5",
+        "ts-node": "^10.9.2"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/arlequins/library-nodejs.git",
+        "directory": "packages/common-config/"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/arlequins/library-nodejs/issues"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    }
+}
