@@ -9,9 +9,9 @@
     "scripts": {
         "run": "echo 'no command'"
     },
-    "engines": {
-        "node": "<= 20"
-    },
+  "engines": {
+    "node": ">=20.x"
+  },
     "peerDependencies": {
         "@types/jest": "^29.5.14",
         "husky": "9.1.7",

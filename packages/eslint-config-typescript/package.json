@@ -13,7 +13,7 @@
     "lint:fix": "eslint . --fix"
   },
   "engines": {
-    "node": "<= 20"
+    "node": ">=20.x"
   },
   "peerDependencies": {
     "eslint": "^9.19.0",
