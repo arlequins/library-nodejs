@@ -11,6 +11,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: packages
+
+    permissions:
+      contents: read       # To checkout the repository
+      packages: write      # To publish packages to GitHub Packages
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
