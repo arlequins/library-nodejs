@@ -1,7 +1,5 @@
 # @arlequins/eslint-plugin-typescript
 
-test
-
 ## Installation
 
 You'll first need to install [ESLint](https://eslint.org/):
