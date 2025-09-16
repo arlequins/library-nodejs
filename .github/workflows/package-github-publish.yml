@@ -14,7 +14,7 @@ jobs:
     environment: packages
 
     permissions:
-      contents: read       # To checkout the repository
+      contents: write       # To checkout the repository
       packages: write      # To publish packages to GitHub Packages
       issues: write
       pull-requests: write
