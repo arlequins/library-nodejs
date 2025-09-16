@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "ESNext"
+        ],
+        "moduleResolution": "nodenext",
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "removeComments": true,
+        "sourceMap": true,
+        "target": "ES2022",
+        "module": "NodeNext",
+        "esModuleInterop": true,
+        "resolveJsonModule": true
+    }
+}
