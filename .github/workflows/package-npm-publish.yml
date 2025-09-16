@@ -27,6 +27,10 @@ jobs:
         with:
           node-version: 22.x
           registry-url: 'https://registry.npmjs.org'
+      - name: npm ci
+        run: |
+          cd packages/utils
+          npm ci
       - name: Configure Git User
         run: |
           git config user.name "github-actions[bot]"
