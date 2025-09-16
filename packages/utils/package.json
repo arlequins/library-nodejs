@@ -1,0 +1,35 @@
+{
+  "name": "@arlequins/utils",
+  "version": "0.0.1",
+  "description": "utils for javascript",
+  "keywords": [
+    "typescript",
+    "utils"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "engines": {
+    "node": ">=22.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arlequins/library-nodejs.git",
+    "directory": "packages/utils/"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arlequins/library-nodejs/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.18",
+    "typescript": "^5.9.2"
+  }
+}
