@@ -3,7 +3,7 @@
         "lib": [
             "ESNext"
         ],
-        "moduleResolution": "node",
+        "moduleResolution": "nodenext",
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "removeComments": true,
