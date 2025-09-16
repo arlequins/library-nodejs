@@ -9,6 +9,12 @@
         "message": "chore(release): publish",
         "registry": "https://registry.npmjs.org",
         "allowBranch": "main"
+      },
+      "version": {
+        "conventionalCommits": true,
+        "message": "chore(release): version packages",
+        "registry": "https://registry.npmjs.org",
+        "allowBranch": "main"
       }
     },
     "publishConfig": {

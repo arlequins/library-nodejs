@@ -4,22 +4,36 @@ name: Package NPM Publish
 
 on:
   workflow_dispatch:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
     environment: packages
+
+    permissions:
+      contents: read       # To checkout the repository
+      packages: write      # To publish packages to GitHub Packages
+      issues: write
+      pull-requests: write
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22.x
           registry-url: 'https://registry.npmjs.org'
-      - name: lerna publish
+      - name: Configure Git User
         run: |
-          lerna publish from-package --no-verify-access -y 
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: lerna publish
+        run: lerna publish --yes --create-release github
         env:
           CI: true
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
