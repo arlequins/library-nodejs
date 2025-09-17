@@ -11,6 +11,7 @@
         "target": "ES2022",
         "module": "NodeNext",
         "esModuleInterop": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "isolatedModules": true,
     }
 }
