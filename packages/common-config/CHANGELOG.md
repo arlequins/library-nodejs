@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/arlequins/library-nodejs/compare/@arlequins/common-config@1.2.1...@arlequins/common-config@1.2.2) (2025-09-17)
+
+
+### Bug Fixes
+
+* ts-jest[ts-compiler] (WARN) Using hybrid module kind (Node16/18/… ([#8](https://github.com/arlequins/library-nodejs/issues/8)) ([d9db953](https://github.com/arlequins/library-nodejs/commit/d9db953c2e06d039bdec6e707651c00b82edf879))
+
+
+
+
+
 ## [1.2.1](https://github.com/arlequins/library-nodejs/compare/@arlequins/common-config@1.2.0...@arlequins/common-config@1.2.1) (2025-09-16)
 
 
