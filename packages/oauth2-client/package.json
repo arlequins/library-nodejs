@@ -1,0 +1,58 @@
+{
+  "name": "@arlequins/oauth2-client",
+  "version": "0.0.1",
+  "description": "oauth2-client",
+  "keywords": [
+    "config"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./portal": {
+      "default": "./dist/portal/index.js",
+      "types": "./dist/portal/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "prisma generate && tsc",
+    "prepare": "npm run build",
+    "generate": "prisma generate",
+    "format": "prisma format",
+    "pull": "prisma db pull"
+  },
+  "files": [
+    "dist",
+    "prisma"
+  ],
+  "engines": {
+    "node": ">=22.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arlequins/library-nodejs.git",
+    "directory": "packages/ouath2/"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arlequins/library-nodejs/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "prisma": "^6.16.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@node-oauth/oauth2-server": "^5.2.1",
+    "@prisma/client": "^6.16.2",
+    "dayjs": "^1.11.18"
+  }
+}
