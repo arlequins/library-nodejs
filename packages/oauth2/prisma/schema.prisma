@@ -15,7 +15,6 @@ datasource db {
   url      = env("PRISMA_DATABASE_URL")
 }
 
-
 // ----------------------------------------
 // OAuth Models
 // ----------------------------------------
@@ -31,28 +30,30 @@ model OAuthScope {
 
 /// This model represents an OAuth2 client application.
 model OAuthClient {
-  oauthClientId  Int      @id @default(autoincrement()) @map("oauth_client_id")
-  name           String   @unique @db.VarChar(255)
-  clientId       String   @unique @map("client_id") @db.VarChar(80)
-  clientSecret   String   @map("client_secret") @db.VarChar(80)
-  redirectUris   String[] @map("redirect_uris") // Using String array for better handling of multiple URIs.
-  grantTypes     String[] @map("grant_types") @db.VarChar(80) // Using String array for multiple grant types.
-  scope          String   @db.VarChar(80)
+  oauthClientId Int      @id @default(autoincrement()) @map("oauth_client_id")
+  name          String   @unique @db.VarChar(255)
+  clientId      String   @unique @map("client_id") @db.VarChar(80)
+  clientSecret  String   @map("client_secret") @db.VarChar(80)
+  redirectUris  String[] @map("redirect_uris") // Using String array for better handling of multiple URIs.
+  grantTypes    String[] @map("grant_types") @db.VarChar(80) // Using String array for multiple grant types.
+  scope         String   @db.VarChar(80)
 
   // Relations
-  accessTokens   OAuthAccessToken[]
-  refreshTokens  OAuthRefreshToken[]
+  accessTokens  OAuthAccessToken[]
+  refreshTokens OAuthRefreshToken[]
 
   @@map("oauth_clients")
 }
 
 /// This model stores authentication-specific user data.
 model OAuthUser {
-  userId        String    @id @map("user_id") @db.VarChar(50)
-  password      String    @db.VarChar(500)
-  scope         String    @db.VarChar(80)
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  userId     String   @id @map("user_id") @db.VarChar(50)
+  password   String   @db.VarChar(500)
+  salt       String?  @db.VarChar(500)
+  iterations Int?
+  scope      String   @db.VarChar(80)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   // Relations
   accessTokens  OAuthAccessToken[]
@@ -98,7 +99,6 @@ model OAuthAccessToken {
   @@map("oauth_access_tokens")
 }
 
-
 // ----------------------------------------
 // User Profile Model
 // ----------------------------------------
@@ -106,7 +106,7 @@ model OAuthAccessToken {
 /// This model stores core user profile information.
 model User {
   userId     String   @id @map("user_id") @db.VarChar(50)
-  email      String   @unique @db.VarChar(100) // User email should be unique.
+  email      String   @db.VarChar(100)
   name       String?  @db.VarChar(100)
   deleteFlag Boolean  @default(false) @map("delete_flag")
   createdAt  DateTime @default(now()) @map("created_at")
@@ -114,7 +114,7 @@ model User {
 
   // Relations
   // Establishes a 1-to-1 relationship with OAuthUser.
-  oauthUser  OAuthUser? @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+  oauthUser OAuthUser? @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("users")
 }

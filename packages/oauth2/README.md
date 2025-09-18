@@ -13,7 +13,7 @@ npx prisma db pull --print
 npx prisma migrate dev --name init --create-only
 npx prisma migrate deploy
 npx prisma migrate status
-npx prisma db seed
+npx prisma db seed --config=./prisma/seed.ts
 ```
 
 ## usage

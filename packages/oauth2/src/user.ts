@@ -81,17 +81,3 @@ export const verifyPassword = async (
   
   return crypto.timingSafeEqual(attemptHashBuffer, persistedHashBuffer);
 };
-
-export const comparePassword = async (
-  password: string,
-  input: string,
-  email: string,
-) =>
-  await verifyPassword(
-    {
-      iterations: ITERATIONS,
-      hash: password,
-      salt: email,
-    },
-    input,
-  );
