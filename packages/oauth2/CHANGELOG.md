@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.3](https://github.com/arlequins/library-nodejs/compare/@arlequins/oauth2@1.0.2...@arlequins/oauth2@1.0.3) (2025-09-18)
+
+
+### Bug Fixes
+
+* last ([4b4fc5a](https://github.com/arlequins/library-nodejs/commit/4b4fc5a839c240fa879530f828b0a7243d71a244))
+
+
+
+
+
 ## [1.0.2](https://github.com/arlequins/library-nodejs/compare/@arlequins/oauth2@1.0.1...@arlequins/oauth2@1.0.2) (2025-09-18)
 
 
