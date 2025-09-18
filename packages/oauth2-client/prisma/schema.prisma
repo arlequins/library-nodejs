@@ -1,0 +1,89 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../dist/generated/prisma"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model OAuthScope {
+  oauthScopeId Int     @id @default(autoincrement()) @map("oauth_scope_id")
+  scope        String  @db.VarChar(80)
+  isDefault    Boolean @map("is_default")
+
+  @@map("oauth_scopes")
+}
+
+model OAuthClient {
+  oauthClientId     Int                 @id @default(autoincrement()) @map("oauth_client_id")
+  name              String              @db.VarChar(255)
+  clientId          String              @map("client_id") @db.VarChar(80)
+  clientSecret      String              @map("client_secret") @db.VarChar(80)
+  redirectUris      String              @map("redirect_uris")
+  grantTypes        String              @map("grant_types") @db.VarChar(80)
+  scope             String              @db.VarChar(80)
+  OAuthAccessToken  OAuthAccessToken[]
+  OAuthRefreshToken OAuthRefreshToken[]
+
+  @@map("oauth_clients")
+}
+
+model OAuthUser {
+  userId            String              @id @map("user_id") @db.VarChar(50)
+  password          String              @db.VarChar(500)
+  scope             String              @db.VarChar(80)
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @map("updated_at")
+  OAuthAccessToken  OAuthAccessToken[]
+  OAuthRefreshToken OAuthRefreshToken[]
+  User              User[]
+
+  @@map("oauth_users")
+}
+
+model OAuthRefreshToken {
+  oauthRefreshTokenId Int          @id @default(autoincrement()) @map("oauth_refresh_token_id")
+  refreshToken        String       @map("refresh_token") @db.VarChar(100)
+  expires             DateTime?    @db.Timestamptz(6)
+  scope               String       @db.VarChar(80)
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @default(now()) @map("updated_at")
+  oauthClientId       Int?
+  userId              String?
+  oauthClient         OAuthClient? @relation(fields: [oauthClientId], references: [oauthClientId])
+  user                OAuthUser?   @relation(fields: [userId], references: [userId])
+
+  @@map("oauth_refresh_tokens")
+}
+
+model OAuthAccessToken {
+  oauthAccessTokenId Int          @id @default(autoincrement()) @map("oauth_access_token_id")
+  accessToken        String       @map("access_token") @db.VarChar(100)
+  expires            DateTime?    @map("expires") @db.Timestamptz(6)
+  scope              String       @map("scope") @db.VarChar(80)
+  createdAt          DateTime     @default(now()) @map("created_at")
+  updatedAt          DateTime     @updatedAt @map("updated_at")
+  oauthClientId      Int?         @map("oauth_client_id")
+  userId             String?      @map("user_id") @db.VarChar(50)
+  oauthClient        OAuthClient? @relation(fields: [oauthClientId], references: [oauthClientId])
+  user               OAuthUser?   @relation(fields: [userId], references: [userId])
+
+  @@map("oauth_access_tokens")
+}
+
+model User {
+  userId     String   @id @map("user_id") @db.VarChar(50)
+  email      String   @db.VarChar(100)
+  name       String?  @db.VarChar(100)
+  deleteFlag Boolean  @default(false) @map("delete_flag")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @map("updated_at")
+
+  // Relations
+  oauthUser OAuthUser @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("users")
+}
