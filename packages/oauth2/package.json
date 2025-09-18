@@ -1,10 +1,7 @@
 {
-  "name": "@arlequins/oauth2-client",
-  "version": "0.0.8",
-  "description": "oauth2-client",
-  "keywords": [
-    "config"
-  ],
+  "name": "@arlequins/oauth2",
+  "version": "1.0.0",
+  "description": "oauth2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
