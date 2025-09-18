@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.7](https://github.com/arlequins/library-nodejs/compare/@arlequins/oauth2-client@0.0.6...@arlequins/oauth2-client@0.0.7) (2025-09-18)
+
+
+### Bug Fixes
+
+* delete seeds ([acd54fb](https://github.com/arlequins/library-nodejs/commit/acd54fb732d67dd3f2c6d8046d783f07879e94c2))
+
+
+
+
+
 ## [0.0.6](https://github.com/arlequins/library-nodejs/compare/@arlequins/oauth2-client@0.0.5...@arlequins/oauth2-client@0.0.6) (2025-09-18)
 
 
