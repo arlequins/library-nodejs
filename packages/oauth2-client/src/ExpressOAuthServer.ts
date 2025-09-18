@@ -6,6 +6,42 @@ import NodeOAuthServer, {
 } from '@node-oauth/oauth2-server';
 
 /**
+ * Handle response.
+ */
+const handleResponse = function (_req, res, response) {
+  if (response.status === 302) {
+    const location = response.headers.location;
+    delete response.headers.location;
+    res.set(response.headers);
+    res.redirect(location);
+  } else {
+    res.set(response.headers);
+    res.status(response.status).send(response.body);
+  }
+};
+
+/**
+ * Handle error.
+ */
+const handleError = function (e, _req, res, response, next) {
+  if (this.useErrorHandler === true) {
+    next(e);
+  } else {
+    if (response) {
+      res.set(response.headers);
+    }
+
+    res.status(e.code);
+
+    if (e instanceof UnauthorizedRequestError) {
+      return res.send();
+    }
+
+    res.send({ error: e.name, error_description: e.message });
+  }
+};
+
+/**
  * Constructor.
  */
 function ExpressOAuthServer(options) {
@@ -20,6 +56,8 @@ function ExpressOAuthServer(options) {
 
   this.continueMiddleware = !!options.continueMiddleware;
   delete options.continueMiddleware;
+
+  this.prismaClient = options.prisma;
 
   this.server = new NodeOAuthServer(options);
 }
@@ -108,62 +146,6 @@ ExpressOAuthServer.prototype.token = function (options) {
     }
   };
 };
-
-/**
- * Handle response.
- */
-const handleResponse = function (_req, res, response) {
-  if (response.status === 302) {
-    const location = response.headers.location;
-    delete response.headers.location;
-    res.set(response.headers);
-    res.redirect(location);
-  } else {
-    res.set(response.headers);
-    res.status(response.status).send(response.body);
-  }
-};
-
-/**
- * Handle error.
- */
-const handleError = function (e, _req, res, response, next) {
-  if (this.useErrorHandler === true) {
-    next(e);
-  } else {
-    if (response) {
-      res.set(response.headers);
-    }
-
-    res.status(e.code);
-
-    if (e instanceof UnauthorizedRequestError) {
-      return res.send();
-    }
-
-    res.send({ error: e.name, error_description: e.message });
-  }
-};
-
-export const createTokenSettings = (isDevelop: boolean) => {
-  const lifetime = {
-    authorizeToken: 5 * 60, // 5 mins
-    accessToken: isDevelop ? 60 * 2 : 60 * 30, // dev 5 min, prod 30 mins
-    refreshToken: isDevelop ? 60 * 60 * 2 : 60 * 60 * 12, // dev 2 hours, prod 12 hours
-  };
-  
-  return {
-    accessTokenLifetime: lifetime.accessToken,
-    refreshTokenLifetime: lifetime.refreshToken,
-    requireClientAuthentication: {
-      client_credentials: false,
-      password: false,
-      refresh_token: false,
-    },
-    allowExtendedTokenAttributes: true,
-    alwaysIssueNewRefreshToken: true,
-  }
-}
 
 /**
  * Export constructor.

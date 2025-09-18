@@ -11,10 +11,6 @@
     ".": {
       "default": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./portal": {
-      "default": "./dist/portal/index.js",
-      "types": "./dist/portal/index.d.ts"
     }
   },
   "scripts": {
