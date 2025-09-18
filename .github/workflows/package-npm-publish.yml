@@ -33,7 +33,7 @@ jobs:
           npm ci
       - name: npm ci
         run: |
-          cd packages/oauth2-client
+          cd packages/oauth2
           npm ci
       - name: Configure Git User
         run: |
