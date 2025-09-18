@@ -100,7 +100,7 @@ const getUserFromClient = async ({
     select: {
       userId: true,
       scope: true,
-      User: {
+      user: {
         select: {
           email: true,
         },
@@ -229,8 +229,8 @@ const getClient = async (clientId: string, clientSecret: string) => {
     oauthClientId: client.oauthClientId,
     clientId,
     clientSecret,
-    grants: client.grantTypes.split(','),
-    redirectUris: client.redirectUris.split(','),
+    grants: client.grantTypes,
+    redirectUris: client.redirectUris,
     scope: client.scope,
   } satisfies OauthClient;
 };
