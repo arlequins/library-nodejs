@@ -32,7 +32,7 @@ model OAuthScope {
 /// This model represents an OAuth2 client application.
 model OAuthClient {
   oauthClientId  Int      @id @default(autoincrement()) @map("oauth_client_id")
-  name           String   @db.VarChar(255)
+  name           String   @unique @db.VarChar(255)
   clientId       String   @unique @map("client_id") @db.VarChar(80)
   clientSecret   String   @map("client_secret") @db.VarChar(80)
   redirectUris   String[] @map("redirect_uris") // Using String array for better handling of multiple URIs.
