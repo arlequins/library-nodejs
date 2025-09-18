@@ -1,12 +1,6 @@
 import dayjs from 'dayjs';
 import { OAuthClient, OAuthUser } from '../dist/generated/prisma'
 
-type OauthClientPayload = {
-  clientId: string;
-  clientSecret?: string;
-  userId: string;
-};
-
 type OauthClient = {
   oauthClientId: number;
   clientId: string;
@@ -63,57 +57,6 @@ const createModels = (prisma) => {
     },
     scope: string,
   ) => token.scope === scope;
-
-  const getUserFromClient = async ({
-    clientId,
-    clientSecret,
-    userId,
-  }: OauthClientPayload) => {
-    const clientRow = clientSecret
-      ? await prisma.oAuthClient.findFirst({
-          where: {
-            clientId,
-            clientSecret,
-          },
-        })
-      : await prisma.oAuthClient.findFirst({
-          where: {
-            clientId,
-          },
-        });
-
-    if (!clientRow) {
-      throw new Error('fail on getUserFromClient');
-    }
-
-    const user = await prisma.oAuthUser.findUnique({
-      where: {
-        userId,
-      },
-      select: {
-        userId: true,
-        scope: true,
-        user: {
-          select: {
-            email: true,
-          },
-          where: {
-            deleteFlag: false,
-          }
-        }
-      },
-    });  
-
-    if (!clientRow || !user) {
-      throw new Error('fail on getUserFromClient');
-    }
-
-    return {
-      user,
-      client: clientRow,
-      scope: user.scope,
-    };
-  };
 
   const getUser = async (email: string, input: string) => {
     const user = await prisma.user.findFirst({
@@ -357,8 +300,6 @@ const createModels = (prisma) => {
   };
 
   return {
-    getUserFromClient,
-
     getRefreshToken,
     getClient,
     saveToken,
