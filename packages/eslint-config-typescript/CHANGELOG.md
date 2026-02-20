@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/arlequins/library-nodejs/compare/@arlequins/eslint-config-typescript@1.1.1...@arlequins/eslint-config-typescript@2.1.0) (2026-02-20)
+
+
+### Features
+
+* update 2.0.0 ([#13](https://github.com/arlequins/library-nodejs/issues/13)) ([a3ea0cd](https://github.com/arlequins/library-nodejs/commit/a3ea0cd13a7ff791da9f04cf80d95ffb3b172883))
+
+
+
+
+
 ## [1.1.1](https://github.com/arlequins/library-nodejs/compare/@arlequins/eslint-config-typescript@1.1.0...@arlequins/eslint-config-typescript@1.1.1) (2025-09-16)
 
 **Note:** Version bump only for package @arlequins/eslint-config-typescript
