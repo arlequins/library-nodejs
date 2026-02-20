@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.5](https://github.com/arlequins/library-nodejs/compare/@arlequins/common-config@1.2.3...@arlequins/common-config@1.2.5) (2026-02-20)
+
+**Note:** Version bump only for package @arlequins/common-config
+
+
+
+
+
 ## [1.2.3](https://github.com/arlequins/library-nodejs/compare/@arlequins/common-config@2.1.0...@arlequins/common-config@1.2.3) (2026-02-20)
 
 **Note:** Version bump only for package @arlequins/common-config
