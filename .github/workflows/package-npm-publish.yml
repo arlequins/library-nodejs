@@ -18,6 +18,7 @@ jobs:
       packages: write      # To publish packages to GitHub Packages
       issues: write
       pull-requests: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
