@@ -28,11 +28,15 @@ jobs:
         with:
           node-version: 24.x
           registry-url: 'https://registry.npmjs.org'
-      - name: npm ci
+      - name: npm ci (oauth2-drizzle)
+        run: |
+          cd packages/oauth2-drizzle
+          npm ci
+      - name: npm ci (utils)
         run: |
           cd packages/utils
           npm ci
-      - name: npm ci
+      - name: npm ci (oauth2)
         run: |
           cd packages/oauth2
           npm ci
