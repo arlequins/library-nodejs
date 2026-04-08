@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2](https://github.com/arlequins/library-nodejs/compare/@arlequins/common-config@2.0.1...@arlequins/common-config@2.0.2) (2026-04-08)
+
+
+### Bug Fixes
+
+* version up and fix oauth2 ([#14](https://github.com/arlequins/library-nodejs/issues/14)) ([5c8aaf4](https://github.com/arlequins/library-nodejs/commit/5c8aaf4f0712c4e684e51ecea8367c638184bfb4))
+
+
+
+
+
 ## [2.0.1](https://github.com/arlequins/library-nodejs/compare/@arlequins/common-config@1.2.7...@arlequins/common-config@2.0.1) (2026-02-20)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@arlequins/oauth2-drizzle",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Drizzle ORM adapter and Postgres client helpers for @arlequins/oauth2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

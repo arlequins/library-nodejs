@@ -1,6 +1,6 @@
 {
   "name": "@arlequins/eslint-config-typescript",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "eslint config for typescript",
   "keywords": [
     "eslint",
