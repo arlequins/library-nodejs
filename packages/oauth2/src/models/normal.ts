@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { and, desc, eq, gte, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import type OAuth2Server from '@node-oauth/oauth2-server';
 
 import type {
   OAuthClient,
@@ -44,7 +45,7 @@ export type CreateOAuthModelsOptions = {
   getUser: (
     username: string,
     password: string,
-    client: ReturnOAuthClient,
+    client: OAuth2Server.Client,
   ) => Promise<OAuthUser | false>;
 };
 
@@ -58,24 +59,27 @@ export function createDrizzleOAuthModels(
 ): OAuthModelBundle {
   const { getUser } = options;
 
-  const validateScope = (
-    user: OAuthUser,
-    client: OAuthClient,
-    requestedScope: string[],
-  ) => {
+  const validateScope = async (
+    user: OAuth2Server.User,
+    client: OAuth2Server.Client,
+    requestedScope?: string[],
+  ): Promise<OAuth2Server.Falsey | string[]> => {
+    const scopes = requestedScope ?? [];
+    const u = user as unknown as OAuthUser;
+    const c = client as unknown as OAuthClient;
     if (
-      user?.scope === client?.scope &&
-      requestedScope.some((obj) => obj === user?.scope)
+      u?.scope === c?.scope &&
+      scopes.some((obj) => obj === u?.scope)
     ) {
-      return requestedScope;
+      return scopes;
     }
     return [];
   };
 
-  const verifyScope = (
-    accessToken: { scope?: string[] | string | null | undefined },
-    requiredScopes: string[],
-  ): boolean => verifyAccessTokenScopes(accessToken, requiredScopes);
+  const verifyScope = async (
+    token: OAuth2Server.Token,
+    scope: string[],
+  ): Promise<boolean> => verifyAccessTokenScopes(token, scope);
 
   const getAccessToken = async (
     accessToken: string,
@@ -111,19 +115,28 @@ export function createDrizzleOAuthModels(
     const client = clientRows[0];
     const oauthUserRow = oauthUserRows[0];
 
-    if (
-      !client ||
-      !oauthUserRow ||
-      !validateScope(oauthUserRowToOAuthUser(oauthUserRow), client, [
-        accessTokenRow.scope,
-      ])
-    ) {
+    if (!client || !oauthUserRow) {
       return null;
     }
+
+    const allowed = await validateScope(
+      oauthUserRowToOAuthUser(oauthUserRow),
+      client as unknown as OAuth2Server.Client,
+      [accessTokenRow.scope],
+    );
+    if (!Array.isArray(allowed) || allowed.length === 0) {
+      return null;
+    }
+
+    const accessClient = oauthClientFromRow(client, {
+      clientId: client.clientId,
+      clientSecret: client.clientSecret ?? '',
+    });
 
     return {
       accessToken,
       accessTokenExpiresAt: accessTokenRow.expires,
+      client: accessClient,
       user: { userId: oauthUserRow.userId },
       scope: [accessTokenRow.scope],
     };
@@ -161,7 +174,9 @@ export function createDrizzleOAuthModels(
     });
   };
 
-  const revokeToken = async (refreshTokenPayload: ReturnOAuthRefreshToken) => {
+  const revokeToken = async (
+    refreshTokenPayload: OAuth2Server.RefreshToken,
+  ): Promise<boolean> => {
     try {
       const rows = await db
         .select({
@@ -182,7 +197,7 @@ export function createDrizzleOAuthModels(
       const refreshTokenRow = rows[0];
 
       if (!refreshTokenRow) {
-        return null;
+        return false;
       }
 
       await db
@@ -208,27 +223,30 @@ export function createDrizzleOAuthModels(
   };
 
   const saveToken = async <T extends OAuthUser>(
-    token: ReturnOAuthToken<T>,
-    client: ReturnOAuthClient,
-    user: OAuthUser,
-  ): Promise<ReturnOAuthToken<T> | null> => {
+    token: OAuth2Server.Token,
+    client: OAuth2Server.Client,
+    user: OAuth2Server.User,
+  ): Promise<ReturnOAuthToken<T> | OAuth2Server.Falsey> => {
     try {
       await db.transaction(async (tx) => {
+        const oauthUser = user as OAuthUser;
+        const oauthClient = client as ReturnOAuthClient;
+
         await tx.insert(oauthAccessTokens).values({
           accessToken: token.accessToken,
-          expires: token.accessTokenExpiresAt,
-          scope: user.scope,
-          oauthClientId: client.oauthClientId,
-          userId: user.userId,
+          expires: token.accessTokenExpiresAt!,
+          scope: oauthUser.scope,
+          oauthClientId: oauthClient.oauthClientId,
+          userId: oauthUser.userId,
         });
 
         if (token.refreshToken) {
           await tx.insert(oauthRefreshTokens).values({
             refreshToken: token.refreshToken,
-            expires: token.refreshTokenExpiresAt,
-            scope: user.scope,
-            oauthClientId: client.oauthClientId,
-            userId: user.userId,
+            expires: token.refreshTokenExpiresAt!,
+            scope: oauthUser.scope,
+            oauthClientId: oauthClient.oauthClientId,
+            userId: oauthUser.userId,
           });
         }
       });
@@ -237,14 +255,17 @@ export function createDrizzleOAuthModels(
       return null;
     }
 
+    const oauthUser = user as OAuthUser;
+    const oauthClient = client as ReturnOAuthClient;
+
     return {
       accessToken: token.accessToken,
-      accessTokenExpiresAt: token.accessTokenExpiresAt,
-      refreshToken: token.refreshToken,
-      refreshTokenExpiresAt: token.refreshTokenExpiresAt,
-      client,
-      user: user as T,
-      scope: [user.scope],
+      accessTokenExpiresAt: token.accessTokenExpiresAt!,
+      refreshToken: token.refreshToken ?? '',
+      refreshTokenExpiresAt: token.refreshTokenExpiresAt!,
+      client: oauthClient,
+      user: oauthUser as T,
+      scope: [oauthUser.scope],
     } satisfies ReturnOAuthToken<T>;
   };
 
@@ -277,15 +298,16 @@ export function createDrizzleOAuthModels(
     const clientRow = clientRows[0];
     const userRow = userRows[0];
 
-    if (
-      !clientRow ||
-      !userRow ||
-      !validateScope(
-        oauthUserRowToOAuthUser(userRow),
-        clientRow,
-        [refreshTokenRow.scope],
-      )
-    ) {
+    if (!clientRow || !userRow) {
+      return null;
+    }
+
+    const allowedRt = await validateScope(
+      oauthUserRowToOAuthUser(userRow),
+      clientRow as unknown as OAuth2Server.Client,
+      [refreshTokenRow.scope],
+    );
+    if (!Array.isArray(allowedRt) || allowedRt.length === 0) {
       return null;
     }
 
@@ -297,7 +319,7 @@ export function createDrizzleOAuthModels(
     return {
       refreshToken,
       refreshTokenExpiresAt: refreshTokenRow.expires,
-      scope: refreshTokenRow.scope,
+      scope: [refreshTokenRow.scope],
       client: mappedClient,
       user: oauthUserRowToOAuthUser(userRow),
     };

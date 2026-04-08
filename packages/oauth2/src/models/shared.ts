@@ -35,7 +35,7 @@ export function oauthClientFromRow(
   };
 }
 
-/** Authenticate handler calls `verifyScope(accessToken, requiredScopes: string[])`. */
+/** Used by model `verifyScope(token, scope)` from `@node-oauth/oauth2-server`. */
 export function verifyAccessTokenScopes(
   accessToken: { scope?: string[] | string | null | undefined },
   requiredScopes: string[],

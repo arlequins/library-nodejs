@@ -1,3 +1,5 @@
+import type OAuth2Server from '@node-oauth/oauth2-server';
+
 export type OAuthClient = {
   oauthClientId: number;
   name: string;
@@ -17,21 +19,6 @@ export type OAuthUser = {
   iterations?: number | null;
 };
 
-export type ReturnOAuthRefreshToken = {
-  refreshToken: string;
-  refreshTokenExpiresAt: Date;
-  scope: string;
-  client: ReturnOAuthClient;
-  user: OAuthUser;
-};
-
-export type ReturnOAuthAccessToken = {
-  accessToken: string;
-  accessTokenExpiresAt: Date;
-  user: Pick<OAuthUser, 'userId'>;
-  scope: string[];
-};
-
 /**
  * Client shape for @node-oauth/oauth2-server (`Client` uses `id` for refresh_token grant checks).
  */
@@ -47,6 +34,24 @@ export type ReturnOAuthClient = {
   id: string; // clientId
 };
 
+/** Matches `RefreshToken` from `@node-oauth/oauth2-server` (`scope` as `string[]`). */
+export type ReturnOAuthRefreshToken = {
+  refreshToken: string;
+  refreshTokenExpiresAt: Date;
+  scope: string[];
+  client: ReturnOAuthClient;
+  user: OAuthUser;
+};
+
+/** Matches `Token` fields used after `getAccessToken` (includes required `client`). */
+export type ReturnOAuthAccessToken = {
+  accessToken: string;
+  accessTokenExpiresAt: Date;
+  client: ReturnOAuthClient;
+  user: Pick<OAuthUser, 'userId'>;
+  scope: string[];
+};
+
 export type ReturnOAuthToken<T extends OAuthUser = OAuthUser> = {
   accessToken: string;
   accessTokenExpiresAt: Date;
@@ -58,43 +63,9 @@ export type ReturnOAuthToken<T extends OAuthUser = OAuthUser> = {
 };
 
 /**
- * Hooks used when building JWT + DB OAuth (e.g. with {@link createJwtOAuthModels}).
- * Implementations live in the application; typings are for shared contracts.
- */
-export type OAuthModelsFns = {
-  isDevelopment: boolean;
-  utils: {
-    dummyUsers: ReadonlyArray<{ userCode: string; }>;
-    setTime: (v: unknown) => { toDate: () => Date };
-    setMils: (exp: number) => number;
-  };
-};
-
-/**
- * Model implementation for `@node-oauth/oauth2-server` (`model` option).
+ * `model` option for password + refresh_token grants — assignable to
+ * `AuthorizationCodeModel | … | PasswordModel | …` for those server options.
  * Built by {@link createDrizzleOAuthModels} or {@link createJwtOAuthModels}.
  */
-export type OAuthModelBundle = {
-  getRefreshToken: (refreshToken: string) => Promise<ReturnOAuthRefreshToken | null>;
-  getClient: (
-    clientId: string,
-    clientSecret: string,
-  ) => Promise<ReturnOAuthClient | false | null>;
-  saveToken: <T extends OAuthUser>(
-    token: ReturnOAuthToken<T>,
-    client: ReturnOAuthClient,
-    user: OAuthUser,
-  ) => Promise<ReturnOAuthToken<T> | null>;
-  revokeToken: (refreshTokenPayload: ReturnOAuthRefreshToken) => Promise<boolean | null>;
-  getUser: (
-    username: string,
-    password: string,
-    client: ReturnOAuthClient,
-  ) => Promise<OAuthUser | false>;
-  validateScope: (user: OAuthUser, client: OAuthClient, requestedScope: string[]) => string[];
-  getAccessToken: (accessToken: string) => Promise<ReturnOAuthAccessToken | null>;
-  verifyScope: (
-    accessToken: { scope?: string[] | string | null | undefined },
-    requiredScopes: string[],
-  ) => boolean | Promise<boolean>;
-};
+export type OAuthModelBundle = OAuth2Server.PasswordModel &
+  OAuth2Server.RefreshTokenModel;

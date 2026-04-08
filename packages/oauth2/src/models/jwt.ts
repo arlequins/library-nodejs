@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { and, desc, eq, gte, sql } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import type OAuth2Server from '@node-oauth/oauth2-server';
 
 import type {
   OAuthClient,
@@ -55,15 +56,15 @@ export type CreateJwtOAuthModelsOptions<
   getUser: (
     username: string,
     password: string,
-    client: ReturnOAuthClient,
+    client: OAuth2Server.Client,
   ) => Promise<OAuthUser | false>;
   getAccessToken: (
     accessToken: string,
   ) => Promise<ReturnOAuthAccessToken | null>;
   saveToken: <T extends OAuthUser>(
-    token: ReturnOAuthToken<T>,
-    client: ReturnOAuthClient,
-    user: OAuthUser,
+    token: OAuth2Server.Token,
+    client: OAuth2Server.Client,
+    user: OAuth2Server.User,
   ) => Promise<ReturnOAuthToken<T> | null>;
 };
 
@@ -93,24 +94,27 @@ export function createJwtOAuthModels<
 ): OAuthModelBundle {
   const { getUser, getAccessToken, saveToken } = options;
 
-  const validateScope = (
-    user: OAuthUser,
-    client: OAuthClient,
-    requestedScope: string[],
-  ): string[] => {
+  const validateScope = async (
+    user: OAuth2Server.User,
+    client: OAuth2Server.Client,
+    requestedScope?: string[],
+  ): Promise<OAuth2Server.Falsey | string[]> => {
+    const scopes = requestedScope ?? [];
+    const u = user as unknown as OAuthUser;
+    const c = client as unknown as OAuthClient;
     if (
-      user?.scope === client?.scope &&
-      requestedScope.some((obj) => obj === user?.scope)
+      u?.scope === c?.scope &&
+      scopes.some((obj) => obj === u?.scope)
     ) {
-      return requestedScope;
+      return scopes;
     }
     return [];
   };
 
-  const verifyScope = (
-    accessToken: { scope?: string[] | string | null | undefined },
-    requiredScopes: string[],
-  ): boolean => verifyAccessTokenScopes(accessToken, requiredScopes);
+  const verifyScope = async (
+    token: OAuth2Server.Token,
+    scope: string[],
+  ): Promise<boolean> => verifyAccessTokenScopes(token, scope);
 
   const getClient = async (
     clientId: string,
@@ -145,8 +149,8 @@ export function createJwtOAuthModels<
   };
 
   const revokeToken = async (
-    refreshTokenPayload: ReturnOAuthRefreshToken,
-  ): Promise<boolean | null> => {
+    refreshTokenPayload: OAuth2Server.RefreshToken,
+  ): Promise<boolean> => {
     try {
       const rows = await db
         .select({
@@ -167,7 +171,7 @@ export function createJwtOAuthModels<
       const refreshTokenRow = rows[0];
 
       if (!refreshTokenRow) {
-        return null;
+        return false;
       }
 
       await db
@@ -221,15 +225,16 @@ export function createJwtOAuthModels<
     const clientRow = clientRows[0];
     const userRow = userRows[0];
 
-    if (
-      !clientRow ||
-      !userRow ||
-      !validateScope(
-        oauthUserRowToOAuthUser(userRow),
-        clientRow,
-        [refreshTokenRow.scope],
-      )
-    ) {
+    if (!clientRow || !userRow) {
+      return null;
+    }
+
+    const allowedRt = await validateScope(
+      oauthUserRowToOAuthUser(userRow),
+      clientRow as unknown as OAuth2Server.Client,
+      [refreshTokenRow.scope],
+    );
+    if (!Array.isArray(allowedRt) || allowedRt.length === 0) {
       return null;
     }
 
@@ -241,7 +246,7 @@ export function createJwtOAuthModels<
     return {
       refreshToken,
       refreshTokenExpiresAt: refreshTokenRow.expires,
-      scope: refreshTokenRow.scope,
+      scope: [refreshTokenRow.scope],
       client: mappedClient,
       user: oauthUserRowToOAuthUser(userRow),
     };
