@@ -2,7 +2,7 @@
 
 Shared ESLint configuration for TypeScript. Built on the flat config (`eslint.config.js`) and includes TypeScript, Prettier, Import, and SonarJS rules.
 
-**Requirements:** Node.js >= 22.x, ESLint 9+
+**Requirements:** Node.js >= 24.x, ESLint 9+
 
 ## Installation
 

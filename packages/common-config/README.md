@@ -2,7 +2,7 @@
 
 Shared configuration for Node.js/TypeScript projects: **lint-staged**, **Prettier**, and **Jest**. Use these configs as a base and extend or override them in your project.
 
-**Requirements:** Node.js >= 22.x
+**Requirements:** Node.js >= 24.x
 
 ## Installation
 

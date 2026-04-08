@@ -1,5 +1,7 @@
 # @arlequins/library-nodejs
 
+This monorepo targets **Node.js 24.x** or newer (see the root `.nvmrc` file).
+
 ## list
 
 - [@arlequins/eslint-config-typescript](https://www.npmjs.com/package/@arlequins/eslint-config-typescript)

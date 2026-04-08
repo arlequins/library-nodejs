@@ -10,7 +10,7 @@
         "run": "echo 'no command'"
     },
     "engines": {
-        "node": ">=22.x"
+        "node": ">=24.x"
     },
     "peerDependencies": {
         "@types/jest": "^29",

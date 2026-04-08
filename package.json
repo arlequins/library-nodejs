@@ -1,10 +1,13 @@
 {
     "name": "@arlequins/library-nodejs",
+    "engines": {
+        "node": ">=24.x"
+    },
     "devDependencies": {
-        "@types/node": "^24.5.2",
-        "lerna": "^8.2.1",
-        "prisma": "^6.16.2",
-        "tsx": "^4.20.5",
-        "typescript": "^5.9.2"
+        "@types/node": "^24.12.2",
+        "lerna": "^9.0.7",
+        "prisma": "^6.19.3",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3"
     }
 }
