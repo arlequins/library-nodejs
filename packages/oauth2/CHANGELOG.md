@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.10](https://github.com/arlequins/library-nodejs/compare/@arlequins/oauth2@1.0.9...@arlequins/oauth2@1.0.10) (2026-04-08)
+
+
+### Bug Fixes
+
+* lock ([7878d16](https://github.com/arlequins/library-nodejs/commit/7878d16f2aa6cf48f6af6f0eceb68ea9a2f0f048))
+* update peer ([376b1ed](https://github.com/arlequins/library-nodejs/commit/376b1ed89a48755a9a859016fe7b746a75d6e978))
+
+
+
+
+
 ## [1.0.9](https://github.com/arlequins/library-nodejs/compare/@arlequins/oauth2@1.0.8...@arlequins/oauth2@1.0.9) (2026-04-08)
 
 
