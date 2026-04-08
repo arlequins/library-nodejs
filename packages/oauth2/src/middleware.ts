@@ -30,8 +30,26 @@ type OAuthExpressResponse = ExpressResponse & {
   };
 };
 
+/** Read `grant_type` / `password` from `req.body` without using Express default `any`. */
+function oauthTokenBodyFields(req: ExpressRequest): {
+  grantType: string | undefined;
+  password: string;
+} {
+  const raw = req.body;
+  if (raw !== null && typeof raw === 'object' && !Array.isArray(raw)) {
+    const o = raw as Record<string, unknown>;
+    const grantType = o.grant_type;
+    const password = o.password;
+    return {
+      grantType: typeof grantType === 'string' ? grantType : undefined,
+      password: typeof password === 'string' ? password : '',
+    };
+  }
+  return { grantType: undefined, password: '' };
+}
+
 const handleResponse = function (
-  _req: unknown,
+  _req: ExpressRequest,
   res: OAuthExpressResponse,
   response: OAuthResponse,
 ): void {
@@ -160,13 +178,12 @@ export class ExpressOAuthServer {
       const request = new OAuthRequest(req);
       const response = new OAuthResponse(res);
 
-      const isPasswordGrantType = request.body?.grant_type === 'password';
+      const { grantType, password } = oauthTokenBodyFields(req);
+      const isPasswordGrantType = grantType === 'password';
       const passwordCheck = this.passwordGrantPasswordValidation;
 
       if (isPasswordGrantType && passwordCheck) {
-        const passwordValidation = passwordCheck.exec(
-          String(request.body?.password ?? ''),
-        );
+        const passwordValidation = passwordCheck.exec(password);
 
         if (passwordValidation === null) {
           response.body = {

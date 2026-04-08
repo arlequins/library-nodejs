@@ -21,7 +21,6 @@ export function oauthClientFromRow(
         .map((s) => s.trim())
         .filter(Boolean);
   return {
-    id: credentials.clientId,
     oauthClientId: row.oauthClientId,
     clientId: credentials.clientId,
     clientSecret: credentials.clientSecret,
@@ -31,6 +30,8 @@ export function oauthClientFromRow(
       .filter(Boolean),
     redirectUris,
     scope: String(row.scope ?? ''),
+
+    id: credentials.clientId,
   };
 }
 

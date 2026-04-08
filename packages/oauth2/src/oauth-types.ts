@@ -36,17 +36,18 @@ export type ReturnOAuthAccessToken = {
  * Client shape for @node-oauth/oauth2-server (`Client` uses `id` for refresh_token grant checks).
  */
 export type ReturnOAuthClient = {
-  /** Must match `clientId` — library compares `token.client.id === client.id`. */
-  id: string;
   oauthClientId: number;
-  clientId: string;
+  clientId: string
   clientSecret: string;
   grants: string[];
   redirectUris: string[];
   scope: string;
+
+  /** Must match `clientId` — library compares `token.client.id === client.id`. */
+  id: string; // clientId
 };
 
-export type ReturnOAuthToken<T> = {
+export type ReturnOAuthToken<T extends OAuthUser = OAuthUser> = {
   accessToken: string;
   accessTokenExpiresAt: Date;
   refreshToken: string;
@@ -56,56 +57,16 @@ export type ReturnOAuthToken<T> = {
   scope: string[];
 };
 
-export interface PersistedPassword {
-  salt: string;
-  hash: string;
-  iterations: number;
-}
-
-export type HashPasswordOptions = {
-  iterations?: number;
-  keyLength?: number;
-  digest?: string;
-  saltBytes?: number;
-};
-
-export type VerifyPasswordOptions = {
-  keyLength?: number;
-  digest?: string;
-};
-
-/** Payload passed to JWT `generateToken` in JWT-backed OAuth flows. */
-export type JwtGenerateTokenPayload = {
-  userId: string;
-  userCode: string;
-  email: string | null;
-  name: string | null;
-  scope: string;
-  permission: {
-    normal: unknown;
-    etc: unknown;
-  };
-};
-
 /**
  * Hooks used when building JWT + DB OAuth (e.g. with {@link createJwtOAuthModels}).
  * Implementations live in the application; typings are for shared contracts.
  */
-export type OAuthModelsFns<Y = unknown> = {
-  verifyToken: (token: string) => Y | null;
-  generateToken: (payload: JwtGenerateTokenPayload) => string;
-  fetchPermissions: (userCode: string) => Promise<unknown>;
-  fetchEtcPermissions: (userCode: string) => Promise<unknown>;
+export type OAuthModelsFns = {
   isDevelopment: boolean;
   utils: {
-    dummyUsers: ReadonlyArray<{ userCode: string; userName: string }>;
-    hashPassword: (password: string) => Promise<PersistedPassword>;
-    verifyPassword: (
-      persisted: PersistedPassword,
-      password: string,
-    ) => Promise<boolean>;
+    dummyUsers: ReadonlyArray<{ userCode: string; }>;
     setTime: (v: unknown) => { toDate: () => Date };
-    setMils: (exp: number) => unknown;
+    setMils: (exp: number) => number;
   };
 };
 
@@ -119,7 +80,7 @@ export type OAuthModelBundle = {
     clientId: string,
     clientSecret: string,
   ) => Promise<ReturnOAuthClient | false | null>;
-  saveToken: <T>(
+  saveToken: <T extends OAuthUser>(
     token: ReturnOAuthToken<T>,
     client: ReturnOAuthClient,
     user: OAuthUser,
@@ -130,7 +91,7 @@ export type OAuthModelBundle = {
     password: string,
     client: ReturnOAuthClient,
   ) => Promise<OAuthUser | false>;
-  validateScope: (user: any, client: any, requestedScope: string[]) => string[];
+  validateScope: (user: OAuthUser, client: OAuthClient, requestedScope: string[]) => string[];
   getAccessToken: (accessToken: string) => Promise<ReturnOAuthAccessToken | null>;
   verifyScope: (
     accessToken: { scope?: string[] | string | null | undefined },

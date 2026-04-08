@@ -207,7 +207,7 @@ export function createDrizzleOAuthModels(
     }
   };
 
-  const saveToken = async <T>(
+  const saveToken = async <T extends OAuthUser>(
     token: ReturnOAuthToken<T>,
     client: ReturnOAuthClient,
     user: OAuthUser,
@@ -243,7 +243,7 @@ export function createDrizzleOAuthModels(
       refreshToken: token.refreshToken,
       refreshTokenExpiresAt: token.refreshTokenExpiresAt,
       client,
-      user: user as unknown as T,
+      user: user as T,
       scope: [user.scope],
     } satisfies ReturnOAuthToken<T>;
   };

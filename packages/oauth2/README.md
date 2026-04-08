@@ -6,8 +6,9 @@ Express middleware and helpers around [`@node-oauth/oauth2-server`](https://www.
 
 | Area | Role |
 |------|------|
-| `ExpressOAuthServer`, `createTokenSettings`, `oauthClientFromRow`, `verifyAccessTokenScopes` | Reusable for any app; wire your own OAuth `model` implementation or use the Drizzle adapter below. |
+| `ExpressOAuthServer`, `createTokenSettings`, `oauthClientFromRow`, `verifyAccessTokenScopes` | Reusable for any app; wire your own OAuth `model` implementation or use the Drizzle adapters below. |
 | `createDrizzleOAuthModels` | **Reference** Drizzle + PostgreSQL adapter. Requires `@arlequins/oauth2-drizzle` (`oauthSchema` tables) and a `NodePgDatabase` (e.g. from `createOAuthDb` in that package). You must pass **`options.getUser`** (password grant). |
+| `createJwtOAuthModels` | **Reference** Drizzle + PostgreSQL model bundle oriented around JWT flows; requires the same Drizzle DB + schema. You supply `getUser`, `getAccessToken`, `saveToken`, and optional hooks (`fetchUserInfo`, `createNewUser`, etc.) typed via `JwtOAuthModelHooks` / `CreateJwtOAuthModelsOptions`. |
 
 ## Peer dependencies
 
@@ -26,6 +27,7 @@ The package entry (`@arlequins/oauth2`) exports:
 
 - `ExpressOAuthServer`, `ExpressOAuthServerOptions`, `ExpressOAuthServerAddition`
 - `createDrizzleOAuthModels`, `CreateOAuthModelsOptions`
+- `createJwtOAuthModels`, `CreateJwtOAuthModelsOptions`, `JwtOAuthModelHooks`
 - `createTokenSettings`
 - `oauthClientFromRow`, `verifyAccessTokenScopes`
 - OAuth-related TypeScript types (via `export type *` from `./oauth-types`, e.g. `OAuthModelBundle`, `ReturnOAuthClient`)

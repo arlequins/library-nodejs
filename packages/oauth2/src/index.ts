@@ -13,5 +13,5 @@ export {
   type CreateJwtOAuthModelsOptions,
   type JwtOAuthModelHooks,
 } from './models/jwt';
-export { createTokenSettings } from './utils';
+export { createTokenSettings, hashPassword, verifyPassword } from './utils';
 export { oauthClientFromRow, verifyAccessTokenScopes } from './models/shared';

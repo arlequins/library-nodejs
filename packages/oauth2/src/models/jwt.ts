@@ -60,7 +60,7 @@ export type CreateJwtOAuthModelsOptions<
   getAccessToken: (
     accessToken: string,
   ) => Promise<ReturnOAuthAccessToken | null>;
-  saveToken: <T>(
+  saveToken: <T extends OAuthUser>(
     token: ReturnOAuthToken<T>,
     client: ReturnOAuthClient,
     user: OAuthUser,
