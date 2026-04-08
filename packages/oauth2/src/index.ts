@@ -1,5 +1,17 @@
-export { default as ExpressOAuthServer } from './ExpressOAuthServer';
-export { default as createModels } from './models';
-export { PrismaClient as createClient  } from '../dist/generated/prisma';
-export { makePostgresqlUrl, createTokenSettings } from './utils';
-export { hashPassword, verifyPassword } from './user';
+export type * from './oauth-types';
+export {
+  ExpressOAuthServer,
+  type ExpressOAuthServerAddition,
+  type ExpressOAuthServerOptions,
+} from './middleware';
+export {
+  createDrizzleOAuthModels,
+  type CreateOAuthModelsOptions,
+} from './models/normal';
+export {
+  createJwtOAuthModels,
+  type CreateJwtOAuthModelsOptions,
+  type JwtOAuthModelHooks,
+} from './models/jwt';
+export { createTokenSettings, hashPassword, verifyPassword } from './utils';
+export { oauthClientFromRow, verifyAccessTokenScopes } from './models/shared';

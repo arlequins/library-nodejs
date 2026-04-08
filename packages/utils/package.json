@@ -13,7 +13,7 @@
     "prepare": "npm run build"
   },
   "engines": {
-    "node": ">=22.x"
+    "node": ">=24.x"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "dayjs": "^1.11.18",
-    "typescript": "^5.9.2"
+    "dayjs": "^1.11.20",
+    "typescript": "^5.9.3"
   }
 }
