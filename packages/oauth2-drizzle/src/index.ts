@@ -1,9 +1,11 @@
 export {
-  createOAuthDb,
-  type CreateOAuthDbOptions,
+  createOAuthDatabaseClient,
+  type CreateOAuthDatabaseOptions,
+  type OAuthDatabaseClient,
   type PgSsl,
 } from './client';
 export {
+  defineOAuthDrizzleSchema,
   oauthAccessTokens,
   oauthClients,
   oauthRefreshTokens,

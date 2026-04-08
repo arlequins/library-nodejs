@@ -15,11 +15,7 @@ import type {
 import { oauthClientFromRow, verifyAccessTokenScopes } from './shared';
 
 import type { OAuthDrizzleSchema } from '@arlequins/oauth2-drizzle';
-import {
-  oauthClients,
-  oauthRefreshTokens,
-  oauthUsers,
-} from '@arlequins/oauth2-drizzle';
+import { oauthSchema } from '@arlequins/oauth2-drizzle';
 
 const REVOKED_TOKEN_PLACEHOLDER_EXPIRY = '2015-05-28T06:59:53.000Z';
 
@@ -68,22 +64,11 @@ export type CreateJwtOAuthModelsOptions<
   ) => Promise<ReturnOAuthToken<T> | null>;
 };
 
-function oauthUserRowToOAuthUser(
-  row: typeof oauthUsers.$inferSelect,
-): OAuthUser {
-  return {
-    userId: row.userId,
-    id: row.userId,
-    scope: row.scope,
-    password: row.password ?? null,
-    salt: row.salt ?? null,
-    iterations: row.iterations ?? null,
-  };
-}
-
 /**
  * JWT-oriented OAuth `model`: `getUser` / `getAccessToken` / `saveToken` are **injected**;
  * `oauth_clients` / `oauth_*_tokens` / `oauth_users` reads for client + refresh flows use Drizzle.
+ *
+ * **`drizzleSchema`** must match the bundle used to create `db` (non-`public` PG schema, etc.).
  */
 export function createJwtOAuthModels<
   TFetchUserInfo = unknown,
@@ -91,8 +76,23 @@ export function createJwtOAuthModels<
 >(
   db: NodePgDatabase<OAuthDrizzleSchema>,
   options: CreateJwtOAuthModelsOptions<TFetchUserInfo, TNewUser>,
+  drizzleSchema: OAuthDrizzleSchema = oauthSchema,
 ): OAuthModelBundle {
   const { getUser, getAccessToken, saveToken } = options;
+  const { oauthClients, oauthUsers, oauthRefreshTokens } = drizzleSchema;
+
+  function oauthUserRowToOAuthUser(
+    row: typeof oauthUsers.$inferSelect,
+  ): OAuthUser {
+    return {
+      userId: row.userId,
+      id: row.userId,
+      scope: row.scope,
+      password: row.password ?? null,
+      salt: row.salt ?? null,
+      iterations: row.iterations ?? null,
+    };
+  }
 
   const validateScope = async (
     user: OAuth2Server.User,

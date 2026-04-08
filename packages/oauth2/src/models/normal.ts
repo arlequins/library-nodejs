@@ -15,27 +15,9 @@ import type {
 import { oauthClientFromRow, verifyAccessTokenScopes } from './shared';
 
 import type { OAuthDrizzleSchema } from '@arlequins/oauth2-drizzle';
-import {
-  oauthAccessTokens,
-  oauthClients,
-  oauthRefreshTokens,
-  oauthUsers,
-} from '@arlequins/oauth2-drizzle';
+import { oauthSchema } from '@arlequins/oauth2-drizzle';
 
 const REVOKED_TOKEN_PLACEHOLDER_EXPIRY = '2015-05-28T06:59:53.000Z';
-
-function oauthUserRowToOAuthUser(
-  row: typeof oauthUsers.$inferSelect,
-): OAuthUser {
-  return {
-    userId: row.userId,
-    id: row.userId,
-    scope: row.scope,
-    password: row.password ?? null,
-    salt: row.salt ?? null,
-    iterations: row.iterations ?? null,
-  };
-}
 
 export type CreateOAuthModelsOptions = {
   /**
@@ -50,14 +32,30 @@ export type CreateOAuthModelsOptions = {
 };
 
 /**
- * OAuth `model` bundle for `@node-oauth/oauth2-server`, backed by Drizzle + PostgreSQL.
- * Tables must match `oauthSchema` from `@arlequins/oauth2-drizzle`.
+ * OAuth `model` bundle for `@node-oauth/oauth2-server`, backed by Drizzle `db`.
+ * **`drizzleSchema`** must be the same table bundle used to build `db` (e.g. from `createOAuthDatabaseClient` when using a non-`public` PG schema).
  */
 export function createDrizzleOAuthModels(
   db: NodePgDatabase<OAuthDrizzleSchema>,
   options: CreateOAuthModelsOptions,
+  drizzleSchema: OAuthDrizzleSchema = oauthSchema,
 ): OAuthModelBundle {
   const { getUser } = options;
+  const { oauthClients, oauthUsers, oauthAccessTokens, oauthRefreshTokens } =
+    drizzleSchema;
+
+  function oauthUserRowToOAuthUser(
+    row: typeof oauthUsers.$inferSelect,
+  ): OAuthUser {
+    return {
+      userId: row.userId,
+      id: row.userId,
+      scope: row.scope,
+      password: row.password ?? null,
+      salt: row.salt ?? null,
+      iterations: row.iterations ?? null,
+    };
+  }
 
   const validateScope = async (
     user: OAuth2Server.User,

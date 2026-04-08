@@ -3,8 +3,8 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { ConnectionOptions } from 'node:tls';
 import { Pool, type PoolConfig } from 'pg';
 
-import type { OAuthDrizzleSchema } from './schema.js';
-import { oauthSchema } from './schema.js';
+import type { OAuthDrizzleSchema } from './schema';
+import { defineOAuthDrizzleSchema } from './schema';
 
 export type PgSsl = boolean | 'require' | 'allow' | 'prefer' | 'verify-full';
 
@@ -15,10 +15,7 @@ function pgSslOption(ssl: PgSsl | undefined): boolean | ConnectionOptions {
   return { rejectUnauthorized: false };
 }
 
-/**
- * Build `pg.Pool` + Drizzle from **explicit options only** (no `process.env`).
- */
-export type CreateOAuthDbOptions =
+type ConnectionOpts =
   | {
       connectionString: string;
       poolConfig?: Omit<PoolConfig, 'connectionString'>;
@@ -37,13 +34,34 @@ export type CreateOAuthDbOptions =
     };
 
 /**
+ * Build `pg.Pool` + Drizzle from **explicit options only** (no `process.env`).
+ *
+ * **`pgSchema`**: PostgreSQL schema / namespace (default `public`). Tables become `"<pgSchema>"."oauth_clients"`, etc.
+ */
+export type CreateOAuthDatabaseOptions = ConnectionOpts & {
+  pgSchema?: string;
+};
+
+export type OAuthDatabaseClient = {
+  db: NodePgDatabase<OAuthDrizzleSchema>;
+  pool: Pool;
+  oauthSchema: OAuthDrizzleSchema;
+  oauthClients: ReturnType<typeof defineOAuthDrizzleSchema>['oauthClients'];
+  oauthUsers: ReturnType<typeof defineOAuthDrizzleSchema>['oauthUsers'];
+  oauthAccessTokens: ReturnType<typeof defineOAuthDrizzleSchema>['oauthAccessTokens'];
+  oauthRefreshTokens: ReturnType<typeof defineOAuthDrizzleSchema>['oauthRefreshTokens'];
+};
+
+/**
  * Create a `pg` pool and Drizzle client. All connection settings must be passed in `options`.
  * Call `pool.end()` when shutting down the process.
  */
-export function createOAuthDb(options: CreateOAuthDbOptions): {
-  db: NodePgDatabase<OAuthDrizzleSchema>;
-  pool: Pool;
-} {
+export function createOAuthDatabaseClient(
+  options: CreateOAuthDatabaseOptions,
+): OAuthDatabaseClient {
+  const pgSchemaName = options.pgSchema ?? 'public';
+  const tables = defineOAuthDrizzleSchema(pgSchemaName);
+
   const pool =
     'connectionString' in options
       ? new Pool({
@@ -59,6 +77,16 @@ export function createOAuthDb(options: CreateOAuthDbOptions): {
           ssl: pgSslOption(options.ssl),
           ...options.poolConfig,
         });
-  const db = drizzle(pool, { schema: oauthSchema });
-  return { db, pool };
+
+  const db = drizzle(pool, { schema: tables.oauthSchema });
+
+  return {
+    db,
+    pool,
+    oauthSchema: tables.oauthSchema,
+    oauthClients: tables.oauthClients,
+    oauthUsers: tables.oauthUsers,
+    oauthAccessTokens: tables.oauthAccessTokens,
+    oauthRefreshTokens: tables.oauthRefreshTokens,
+  };
 }
