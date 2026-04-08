@@ -46,5 +46,6 @@
   "peerDependencies": {
     "drizzle-orm": ">=0.45.2",
     "pg": "^8.14.0"
-  }
+  },
+  "gitHead": "a6a61e7d5ba81440c5917c9e112e4da7391b66a9"
 }

@@ -38,7 +38,7 @@
     "dayjs": "^1.11.20"
   },
   "devDependencies": {
-    "@arlequins/oauth2-drizzle": "file:../oauth2-drizzle",
+    "@arlequins/oauth2-drizzle": "^0.0.4",
     "@types/express": "^5.0.0",
     "@types/node": "^24.12.2",
     "@types/pg": "^8.11.10",
@@ -63,5 +63,6 @@
     "pg": {
       "optional": true
     }
-  }
+  },
+  "gitHead": "a6a61e7d5ba81440c5917c9e112e4da7391b66a9"
 }
