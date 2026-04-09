@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.9](https://github.com/arlequins/library-nodejs/compare/@arlequins/oauth2-drizzle@0.0.8...@arlequins/oauth2-drizzle@0.0.9) (2026-04-09)
+
+
+### Bug Fixes
+
+* schema ([a2a4a91](https://github.com/arlequins/library-nodejs/commit/a2a4a9112230116a4ac359f7ea372a3fefe4e245))
+
+
+
+
+
 ## [0.0.8](https://github.com/arlequins/library-nodejs/compare/@arlequins/oauth2-drizzle@0.0.7...@arlequins/oauth2-drizzle@0.0.8) (2026-04-09)
 
 
