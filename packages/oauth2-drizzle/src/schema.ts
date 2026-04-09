@@ -6,11 +6,7 @@ import {
   timestamp,
 } from 'drizzle-orm/pg-core';
 
-/**
- * Build OAuth table definitions bound to a PostgreSQL schema (namespace), e.g. `myapp.oauth_clients`.
- * Results are cached per `schemaName` so `defineOAuthDrizzleSchema('public')` matches the default exports.
- */
-function buildOAuthSchemaOnce(schemaName: string) {
+export function defineOAuthDrizzleSchema(schemaName: string) {
   const s = pgSchema(schemaName);
 
   const oauthClients = s.table('oauth_clients', {
@@ -55,48 +51,17 @@ function buildOAuthSchemaOnce(schemaName: string) {
       .defaultNow(),
   });
 
-  const oauthSchema = {
-    oauthClients,
-    oauthUsers,
-    oauthAccessTokens,
-    oauthRefreshTokens,
-  };
-
   return {
     oauthClients,
     oauthUsers,
     oauthAccessTokens,
     oauthRefreshTokens,
-    oauthSchema,
   };
 }
 
-const publicBundle = buildOAuthSchemaOnce('public');
-
-export const oauthClients = publicBundle.oauthClients;
-export const oauthUsers = publicBundle.oauthUsers;
-export const oauthAccessTokens = publicBundle.oauthAccessTokens;
-export const oauthRefreshTokens = publicBundle.oauthRefreshTokens;
-
-/** Default `public` schema — pass to `drizzle(pool, { schema: oauthSchema })`. */
-export const oauthSchema = publicBundle.oauthSchema;
-
-export type OAuthDrizzleSchema = typeof oauthSchema;
-
-const bundleCache = new Map<string, typeof publicBundle>([
-  ['public', publicBundle],
-]);
-
-/**
- * Table bundle for the given PostgreSQL schema name (not the DB name).
- * Use the returned `oauthSchema` with `createOAuthDatabaseClient` / `drizzle`, and the same bundle with `@arlequins/oauth2` model factories.
- */
-export function defineOAuthDrizzleSchema(schemaName: string): typeof publicBundle {
-  const key = schemaName;
-  let bundle = bundleCache.get(key);
-  if (!bundle) {
-    bundle = buildOAuthSchemaOnce(schemaName);
-    bundleCache.set(key, bundle);
-  }
-  return bundle;
-}
+export type OAuthDrizzleSchema = {
+  oauthClients: ReturnType<typeof defineOAuthDrizzleSchema>['oauthClients'];
+  oauthUsers: ReturnType<typeof defineOAuthDrizzleSchema>['oauthUsers'];
+  oauthAccessTokens: ReturnType<typeof defineOAuthDrizzleSchema>['oauthAccessTokens'];
+  oauthRefreshTokens: ReturnType<typeof defineOAuthDrizzleSchema>['oauthRefreshTokens'];
+};

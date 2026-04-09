@@ -46,10 +46,6 @@ export type OAuthDatabaseClient = {
   db: NodePgDatabase<OAuthDrizzleSchema>;
   pool: Pool;
   oauthSchema: OAuthDrizzleSchema;
-  oauthClients: ReturnType<typeof defineOAuthDrizzleSchema>['oauthClients'];
-  oauthUsers: ReturnType<typeof defineOAuthDrizzleSchema>['oauthUsers'];
-  oauthAccessTokens: ReturnType<typeof defineOAuthDrizzleSchema>['oauthAccessTokens'];
-  oauthRefreshTokens: ReturnType<typeof defineOAuthDrizzleSchema>['oauthRefreshTokens'];
 };
 
 /**
@@ -60,7 +56,7 @@ export function createOAuthDatabaseClient(
   options: CreateOAuthDatabaseOptions,
 ): OAuthDatabaseClient {
   const pgSchemaName = options.pgSchema ?? 'public';
-  const tables = defineOAuthDrizzleSchema(pgSchemaName);
+  const oauthSchema = defineOAuthDrizzleSchema(pgSchemaName);
 
   const pool =
     'connectionString' in options
@@ -78,15 +74,11 @@ export function createOAuthDatabaseClient(
           ...options.poolConfig,
         });
 
-  const db = drizzle(pool, { schema: tables.oauthSchema });
+  const db = drizzle(pool, { schema: oauthSchema });
 
   return {
     db,
     pool,
-    oauthSchema: tables.oauthSchema,
-    oauthClients: tables.oauthClients,
-    oauthUsers: tables.oauthUsers,
-    oauthAccessTokens: tables.oauthAccessTokens,
-    oauthRefreshTokens: tables.oauthRefreshTokens,
+    oauthSchema,
   };
 }

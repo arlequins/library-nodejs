@@ -6,10 +6,5 @@ export {
 } from './client';
 export {
   defineOAuthDrizzleSchema,
-  oauthAccessTokens,
-  oauthClients,
-  oauthRefreshTokens,
-  oauthSchema,
-  oauthUsers,
   type OAuthDrizzleSchema,
 } from './schema';
