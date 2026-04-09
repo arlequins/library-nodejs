@@ -15,7 +15,6 @@ import type {
 import { oauthClientFromRow, verifyAccessTokenScopes } from './shared';
 
 import type { OAuthDrizzleSchema } from '@arlequins/oauth2-drizzle';
-import { oauthSchema } from '@arlequins/oauth2-drizzle';
 
 const REVOKED_TOKEN_PLACEHOLDER_EXPIRY = '2015-05-28T06:59:53.000Z';
 
@@ -38,7 +37,7 @@ export type CreateOAuthModelsOptions = {
 export function createDrizzleOAuthModels(
   db: NodePgDatabase<OAuthDrizzleSchema>,
   options: CreateOAuthModelsOptions,
-  drizzleSchema: OAuthDrizzleSchema = oauthSchema,
+  drizzleSchema: OAuthDrizzleSchema,
 ): OAuthModelBundle {
   const { getUser } = options;
   const { oauthClients, oauthUsers, oauthAccessTokens, oauthRefreshTokens } =
