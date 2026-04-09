@@ -244,6 +244,7 @@ export function createDrizzleOAuthModels(
           scope: oauthUser.scope,
           oauthClientId: oauthClient.oauthClientId,
           userId: oauthUser.userId,
+          createdAt: now,
           updatedAt: now,
         });
 
@@ -254,6 +255,7 @@ export function createDrizzleOAuthModels(
             scope: oauthUser.scope,
             oauthClientId: oauthClient.oauthClientId,
             userId: oauthUser.userId,
+            createdAt: now,
             updatedAt: now,
           });
         }
