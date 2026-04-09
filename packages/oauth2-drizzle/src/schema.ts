@@ -1,4 +1,5 @@
 import {
+  boolean,
   integer,
   pgSchema,
   serial,
@@ -6,6 +7,9 @@ import {
   timestamp,
 } from 'drizzle-orm/pg-core';
 
+/**
+ * OAuth tables for a PostgreSQL schema (e.g. `oauth2`). Pass the schema **name**, not the DB name.
+ */
 export function defineOAuthDrizzleSchema(schemaName: string) {
   const s = pgSchema(schemaName);
 
@@ -14,41 +18,59 @@ export function defineOAuthDrizzleSchema(schemaName: string) {
     name: text('name').notNull(),
     clientId: text('client_id').notNull(),
     clientSecret: text('client_secret').notNull(),
-    redirectUris: text('redirect_uris').notNull(),
-    grantTypes: text('grant_types').notNull(),
+    redirectUris: text('redirect_uris'),
+    grantTypes: text('grant_types'),
     scope: text('scope').notNull(),
   });
 
   const oauthUsers = s.table('oauth_users', {
     userId: text('user_id').primaryKey(),
-    scope: text('scope').notNull(),
-    password: text('password'),
+    password: text('password').notNull(),
     salt: text('salt'),
     iterations: integer('iterations'),
+    scope: text('scope').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+      .notNull()
+      .defaultNow(),
   });
 
   const oauthAccessTokens = s.table('oauth_access_tokens', {
     oauthAccessTokenId: serial('oauth_access_token_id').primaryKey(),
     accessToken: text('access_token').notNull(),
-    expires: timestamp('expires', { withTimezone: true, mode: 'date' }).notNull(),
+    expires: timestamp('expires', { withTimezone: true, mode: 'date' }),
     scope: text('scope').notNull(),
-    oauthClientId: integer('oauth_client_id').notNull(),
-    userId: text('user_id').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
       .notNull()
       .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+      .notNull()
+      .defaultNow(),
+    oauthClientId: integer('oauth_client_id'),
+    userId: text('user_id'),
   });
 
   const oauthRefreshTokens = s.table('oauth_refresh_tokens', {
     oauthRefreshTokenId: serial('oauth_refresh_token_id').primaryKey(),
     refreshToken: text('refresh_token').notNull(),
-    expires: timestamp('expires', { withTimezone: true, mode: 'date' }).notNull(),
+    expires: timestamp('expires', { withTimezone: true, mode: 'date' }),
     scope: text('scope').notNull(),
-    oauthClientId: integer('oauth_client_id').notNull(),
-    userId: text('user_id').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
       .notNull()
       .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+      .notNull()
+      .defaultNow(),
+    oauthClientId: integer('oauth_client_id'),
+    userId: text('user_id'),
+  });
+
+  const oauthScopes = s.table('oauth_scopes', {
+    oauthScopeId: serial('oauth_scope_id').primaryKey(),
+    scope: text('scope').notNull(),
+    isDefault: boolean('is_default').notNull(),
   });
 
   return {
@@ -56,6 +78,7 @@ export function defineOAuthDrizzleSchema(schemaName: string) {
     oauthUsers,
     oauthAccessTokens,
     oauthRefreshTokens,
+    oauthScopes,
   };
 }
 
@@ -64,4 +87,5 @@ export type OAuthDrizzleSchema = {
   oauthUsers: ReturnType<typeof defineOAuthDrizzleSchema>['oauthUsers'];
   oauthAccessTokens: ReturnType<typeof defineOAuthDrizzleSchema>['oauthAccessTokens'];
   oauthRefreshTokens: ReturnType<typeof defineOAuthDrizzleSchema>['oauthRefreshTokens'];
+  oauthScopes: ReturnType<typeof defineOAuthDrizzleSchema>['oauthScopes'];
 };

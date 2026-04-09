@@ -209,6 +209,14 @@ export function createJwtOAuthModels<
 
     const refreshTokenRow = rtRows[0];
 
+    if (
+      refreshTokenRow.oauthClientId == null ||
+      refreshTokenRow.userId == null ||
+      !refreshTokenRow.expires
+    ) {
+      return null;
+    }
+
     const clientRows = await db
       .select()
       .from(oauthClients)

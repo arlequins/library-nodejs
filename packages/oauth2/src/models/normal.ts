@@ -97,6 +97,14 @@ export function createDrizzleOAuthModels(
     const accessTokenRow = rows[0];
     if (!accessTokenRow) return null;
 
+    if (
+      !accessTokenRow.expires ||
+      accessTokenRow.oauthClientId == null ||
+      accessTokenRow.userId == null
+    ) {
+      return null;
+    }
+
     const clientRows = await db
       .select()
       .from(oauthClients)
@@ -229,12 +237,14 @@ export function createDrizzleOAuthModels(
         const oauthUser = user as OAuthUser;
         const oauthClient = client as ReturnOAuthClient;
 
+        const now = new Date();
         await tx.insert(oauthAccessTokens).values({
           accessToken: token.accessToken,
           expires: token.accessTokenExpiresAt!,
           scope: oauthUser.scope,
           oauthClientId: oauthClient.oauthClientId,
           userId: oauthUser.userId,
+          updatedAt: now,
         });
 
         if (token.refreshToken) {
@@ -244,6 +254,7 @@ export function createDrizzleOAuthModels(
             scope: oauthUser.scope,
             oauthClientId: oauthClient.oauthClientId,
             userId: oauthUser.userId,
+            updatedAt: now,
           });
         }
       });
@@ -279,6 +290,14 @@ export function createDrizzleOAuthModels(
     if (!rtRows[0]) return null;
 
     const refreshTokenRow = rtRows[0];
+
+    if (
+      refreshTokenRow.oauthClientId == null ||
+      refreshTokenRow.userId == null ||
+      !refreshTokenRow.expires
+    ) {
+      return null;
+    }
 
     const clientRows = await db
       .select()
